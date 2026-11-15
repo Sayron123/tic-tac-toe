@@ -10,19 +10,25 @@ export default function App() {
   const winningLine = result.status === 'won' ? result.line : [];
 
   return (
-    <main className="app">
-      <h1 className="title">Tic Tac Toe</h1>
-      <Scoreboard score={score} />
-      <GameStatus result={result} />
-      <Board board={board} winningLine={winningLine} isGameOver={isGameOver} onSelect={playMove} />
-      <div className="actions">
-        <button type="button" className="button button--primary" onClick={newRound}>
+    <div className="app">
+      <header className="header">
+        <h1 className="title">Tic Tac Toe</h1>
+        <GameStatus result={result} />
+      </header>
+
+      <main className="content">
+        <Scoreboard score={score} />
+        <Board board={board} winningLine={winningLine} isGameOver={isGameOver} onSelect={playMove} />
+      </main>
+
+      <footer className="actions">
+        <button type="button" className="button button--filled" onClick={newRound}>
           New round
         </button>
-        <button type="button" className="button" onClick={resetScore}>
+        <button type="button" className="button button--destructive" onClick={resetScore}>
           Reset score
         </button>
-      </div>
-    </main>
+      </footer>
+    </div>
   );
 }

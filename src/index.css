@@ -1,50 +1,59 @@
-/* Design tokens: 1 background, 1 text color, 1 accent. Spacing follows a 4px scale. */
+/*
+ * iOS-style look: system font, grouped background, inset cards, system blue accent.
+ * Layout: title on top, board in the middle, actions at the bottom within thumb reach.
+ * Spacing follows a 4px scale.
+ */
 :root {
-  --color-bg: #f4f5f7;
-  --color-surface: #ffffff;
-  --color-text: #1f2a44;
-  --color-muted: #5b6478;
-  --color-border: #dde1e8;
-  --color-accent: #2f5bea;
-  --color-accent-soft: #d3defc;
+  --color-bg: #f2f2f7;          /* systemGroupedBackground */
+  --color-surface: #ffffff;     /* secondarySystemGroupedBackground */
+  --color-text: #000000;        /* label */
+  --color-muted: #6e6e73;       /* secondaryLabel */
+  --color-separator: #d1d1d6;   /* separator */
+  --color-accent: #007aff;      /* systemBlue */
+  --color-accent-soft: rgba(0, 122, 255, 0.14);
   --color-on-accent: #ffffff;
+  --color-destructive: #ff3b30; /* systemRed */
 
   --space-1: 4px;
   --space-2: 8px;
-  --space-3: 16px;
-  --space-4: 24px;
-  --space-5: 32px;
-  --space-6: 48px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
 
-  --radius: 8px;
-  --font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --radius-card: 14px;
+  --radius-cell: 12px;
+  --font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
 
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --color-bg: #12161f;
-    --color-surface: #1b2130;
-    --color-text: #e8ebf2;
-    --color-muted: #9aa3b5;
-    --color-border: #2c3447;
-    --color-accent: #7f9cff;
-    --color-accent-soft: #2b3c78;
-    --color-on-accent: #12161f;
+    --color-bg: #000000;
+    --color-surface: #1c1c1e;
+    --color-text: #ffffff;
+    --color-muted: #98989f;
+    --color-separator: #38383a;
+    --color-accent: #0a84ff;
+    --color-accent-soft: rgba(10, 132, 255, 0.24);
+    --color-on-accent: #ffffff;
+    --color-destructive: #ff453a;
     color-scheme: dark;
   }
 }
 
 :root[data-theme='dark'] {
-  --color-bg: #12161f;
-  --color-surface: #1b2130;
-  --color-text: #e8ebf2;
-  --color-muted: #9aa3b5;
-  --color-border: #2c3447;
-  --color-accent: #7f9cff;
-  --color-accent-soft: #2b3c78;
-  --color-on-accent: #12161f;
+  --color-bg: #000000;
+  --color-surface: #1c1c1e;
+  --color-text: #ffffff;
+  --color-muted: #98989f;
+  --color-separator: #38383a;
+  --color-accent: #0a84ff;
+  --color-accent-soft: rgba(10, 132, 255, 0.24);
+  --color-on-accent: #ffffff;
+  --color-destructive: #ff453a;
   color-scheme: dark;
 }
 
@@ -54,60 +63,104 @@
   box-sizing: border-box;
 }
 
+html,
+body,
+#root {
+  height: 100%;
+}
+
 body {
   margin: 0;
-  min-height: 100vh;
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font);
-  line-height: 1.5;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
 }
 
 button {
   font: inherit;
+  touch-action: manipulation; /* removes the double-tap zoom delay on mobile */
+  -webkit-user-select: none;
+  user-select: none;
 }
 
+/* Page frame: header / content / actions, padded clear of the notch and home indicator. */
 .app {
-  max-width: 360px;
+  min-height: 100%;
+  max-width: 480px;
   margin: 0 auto;
-  padding: var(--space-6) var(--space-3);
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  padding-top: max(var(--space-4), env(safe-area-inset-top));
+  padding-bottom: max(var(--space-5), env(safe-area-inset-bottom));
+  padding-left: max(var(--space-4), env(safe-area-inset-left));
+  padding-right: max(var(--space-4), env(safe-area-inset-right));
+}
+
+/* Large title, left-aligned like an iOS navigation bar. */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
 }
 
 .title {
   margin: 0;
-  font-size: 1.75rem;
+  font-family: var(--font-display);
+  font-size: 2.125rem; /* 34pt, iOS large title */
   font-weight: 700;
-  letter-spacing: -0.01em;
-  text-align: center;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
 }
 
-/* Scoreboard */
+.status {
+  margin: 0;
+  font-size: 1.0625rem; /* 17pt, iOS body */
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+/* Scoreboard: one inset card split by hairline separators. */
 .scoreboard {
+  width: 100%;
   margin: 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-2);
+  background: var(--color-surface);
+  border-radius: var(--radius-card);
 }
 
 .score {
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-2);
   text-align: center;
 }
 
+.score + .score {
+  border-left: 0.5px solid var(--color-separator);
+}
+
 .score dt {
-  font-size: 0.75rem;
+  font-size: 0.8125rem; /* 13pt, footnote */
   color: var(--color-muted);
 }
 
 .score dd {
   margin: 0;
-  font-size: 1.25rem;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
@@ -116,47 +169,44 @@ button {
   color: var(--color-accent);
 }
 
-/* Status */
-.status {
-  margin: 0;
-  text-align: center;
-  font-weight: 600;
-  color: var(--color-muted);
-}
-
-/* Board */
+/* Board: square, sized by whichever is smaller, screen width or the height left after the other rows. */
 .board {
+  width: min(100%, 100vh - 310px);
+  width: min(100%, 100dvh - 310px);
+  min-width: 240px;
+  aspect-ratio: 1;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   gap: var(--space-2);
+  padding: var(--space-2);
+  background: var(--color-surface);
+  border-radius: calc(var(--radius-cell) + var(--space-2));
 }
 
 .square {
-  aspect-ratio: 1;
   display: grid;
   place-items: center;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  min-width: 0;
+  padding: 0;
+  background: var(--color-bg);
+  border: 0;
+  border-radius: var(--radius-cell);
   color: var(--color-text);
-  font-size: 2.5rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 14vw, 4rem);
+  font-weight: 600;
+  line-height: 1;
   cursor: pointer;
-  transition: background-color 120ms ease, border-color 120ms ease;
+  transition: transform 120ms ease, background-color 160ms ease;
 }
 
-.square:hover:not(:disabled) {
-  border-color: var(--color-accent);
+.square:active:not(:disabled) {
+  transform: scale(0.94);
 }
 
 .square:disabled {
   cursor: default;
-}
-
-.square:focus-visible,
-.button:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
 }
 
 .square--x {
@@ -165,44 +215,55 @@ button {
 
 .square--winning {
   background: var(--color-accent-soft);
-  border: 2px solid var(--color-accent);
 }
 
-/* Actions */
+/* Actions: filled primary button next to a destructive button, kept in thumb reach. */
 .actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 
 .button {
-  padding: var(--space-2) var(--space-3);
-  min-height: 44px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  color: var(--color-text);
+  min-height: 50px;
+  padding: var(--space-3) var(--space-4);
+  border: 0;
+  border-radius: var(--radius-card);
+  font-size: 1.0625rem;
   font-weight: 600;
   cursor: pointer;
+  transition: opacity 120ms ease;
 }
 
-.button:hover {
-  border-color: var(--color-text);
+.button:active {
+  opacity: 0.6;
 }
 
-.button--primary {
+.button--filled {
   background: var(--color-accent);
-  border-color: var(--color-accent);
   color: var(--color-on-accent);
 }
 
-.button--primary:hover {
-  border-color: var(--color-accent);
-  filter: brightness(1.08);
+.button--destructive {
+  background: var(--color-surface);
+  color: var(--color-destructive);
+}
+
+.square:focus-visible,
+.button:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) {
+  .square:hover:not(:disabled) {
+    background: var(--color-accent-soft);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .square {
+  .square,
+  .button {
     transition: none;
   }
 }
