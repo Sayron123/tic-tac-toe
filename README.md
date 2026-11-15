@@ -13,6 +13,8 @@ Two-player Tic Tac Toe built with React and TypeScript.
 
 ![Screenshot](docs/screenshot-light.png)
 
+Demo video: [docs/demo.mp4](docs/demo.mp4)
+
 ## Stack
 
 | Layer      | Tool                                  |
